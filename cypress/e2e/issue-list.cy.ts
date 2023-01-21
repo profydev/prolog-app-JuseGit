@@ -83,7 +83,7 @@ describe("Issue List", () => {
       cy.contains("Page 2 of 3");
     });
 
-    it.only("shows the right number of events and users", () => {
+    it("shows the right number of events and users", () => {
       const issue = mockIssues1.items[0];
       cy.get("tbody tr:first td:nth-last-child(2)").contains(issue.numEvents);
       cy.get("tbody tr:first td:nth-last-child(1)").contains(issue.numUsers);
