@@ -43,6 +43,10 @@ export type Theme = {
   };
   size: {
     headerHeight: string;
+    footerHeight: {
+      desktop: string;
+      mobile: string;
+    };
   };
   breakpoint: {
     desktop: string;
@@ -148,6 +152,10 @@ export const theme = {
   },
   size: {
     headerHeight: "4rem",
+    footerHeight: {
+      desktop: "3.75rem",
+      mobile: "11.0625em",
+    },
   },
   breakpoint: {
     desktop: "64em",
