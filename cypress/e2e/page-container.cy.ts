@@ -7,7 +7,7 @@ describe("Page Container", () => {
 
   it("renders footer elements correctly", () => {
     cy.get('[data-cy="page-content-footer"]').contains(
-      `Version: ${Cypress.env("npm_package_version")}`
+      `Version: ${Cypress.env("APP_VERSION")}`
     );
 
     cy.get("ul").contains("Docs").should("have.attr", "href", "/dashboard#");

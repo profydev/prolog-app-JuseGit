@@ -1,7 +1,4 @@
 import { defineConfig } from "cypress";
-import { loadEnvConfig } from "@next/env";
-
-const { combinedEnv } = loadEnvConfig(process.cwd());
 
 export default defineConfig({
   retries: {
@@ -15,5 +12,7 @@ export default defineConfig({
     },
   },
 
-  env: combinedEnv,
+  env: {
+    APP_VERSION: "14.5.2",
+  },
 });
