@@ -1,7 +1,8 @@
 import styled from "styled-components";
-import { breakpoint, space } from "@styles/theme";
+import { breakpoint, color, space, theme } from "@styles/theme";
 import { ProjectCard } from "../project-card";
 import { useGetProjects } from "../../api/use-get-projects";
+import LoadingIcon from "./loading-icon";
 
 const List = styled.ul`
   display: grid;
@@ -22,7 +23,13 @@ export function ProjectList() {
   const { data, isLoading, isError, error } = useGetProjects();
 
   if (isLoading) {
-    return <div>Loading</div>;
+    return (
+      <LoadingIcon
+        name="loading-icon"
+        bgColor={color("primary", 50)({ theme })}
+        fgColor={color("primary", 700)({ theme })}
+      />
+    );
   }
 
   if (isError) {

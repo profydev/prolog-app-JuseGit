@@ -152,6 +152,7 @@ export const theme = {
   },
   size: {
     headerHeight: "4rem",
+    loadingHeight: "18.75rem",
     footerHeight: {
       desktop: "3.75rem",
       mobile: "11.0625em",
