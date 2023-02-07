@@ -10,8 +10,14 @@ describe("Project List", () => {
     // open projects page
     cy.visit("http://localhost:3000/dashboard");
 
+    // checks loading screen
+    cy.get('[data-cy="svg-loading-icon"]').should("be.visible");
+
     // wait for request to resolve
     cy.wait("@getProjects");
+
+    // checks that the loading icon is not visible anymore after projects content has been loaded
+    cy.get('[data-cy="svg-loading-icon"]').should("not.exist");
   });
 
   context("desktop resolution", () => {

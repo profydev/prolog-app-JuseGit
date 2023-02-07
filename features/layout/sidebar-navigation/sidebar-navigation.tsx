@@ -20,6 +20,7 @@ const containerStyles = css`
   width: 100%;
   display: flex;
   flex-direction: column;
+  z-index: 999;
 
   @media (min-width: ${breakpoint("desktop")}) {
     width: 17.5rem;
