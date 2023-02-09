@@ -66,5 +66,36 @@ describe("Project List", () => {
             .should("have.attr", "href", "/dashboard/issues");
         });
     });
+
+    it("renders an error screen", () => {
+      // setup request error
+      cy.intercept("GET", "https://prolog-api.profy.dev/project", {
+        forceNetworkError: true,
+      }).as("getProjectsError");
+
+      cy.visit("http://localhost:3000/dashboard");
+
+      cy.get('[data-cy="error-screen"]', { timeout: 10000 }).contains(
+        "There was a problem while loading the project data"
+      );
+    });
+
+    it("has a try again button to refetch data, in the error screen", () => {
+      // setup request error
+      cy.intercept("GET", "https://prolog-api.profy.dev/project", {
+        statusCode: 500,
+      }).as("getProjectsError");
+
+      cy.visit("http://localhost:3000/dashboard");
+
+      cy.get('[data-cy="error-screen"]', { timeout: 10000 })
+        .contains("Try again")
+        .as("try-again-btn");
+
+      cy.get("@try-again-btn").click();
+
+      // wait for request to resolve
+      cy.wait("@getProjectsError").its("response.statusCode").should("eq", 500);
+    });
   });
 });
