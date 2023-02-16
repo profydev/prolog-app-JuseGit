@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "@features/ui";
+import { Button, ButtonColor, ButtonSize, ButtonIcon } from "@features/ui";
 import { ListItem, Anchor, Icon } from "./menu-item-link";
 import styled from "styled-components";
 
@@ -9,6 +9,9 @@ type MenuItemProps = {
   iconSrc: string;
   onClick: () => void;
   isCollapsed: boolean;
+  size: ButtonSize;
+  color: ButtonColor;
+  icon: ButtonIcon;
 };
 
 const CollapseIcon = styled(Icon)<{ isCollapsed: boolean }>`
@@ -21,10 +24,19 @@ export function MenuItemButton({
   onClick,
   iconSrc,
   isCollapsed,
+  size,
+  color,
+  icon,
 }: MenuItemProps) {
   return (
     <ListItem className={className}>
-      <Anchor as={Button} onClick={onClick}>
+      <Anchor
+        as={Button}
+        size={size}
+        color={color}
+        icon={icon}
+        onClick={onClick}
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <CollapseIcon
           src={iconSrc}
