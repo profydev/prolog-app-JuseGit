@@ -5,7 +5,7 @@ import { Routes } from "@config/routes";
 import { NavigationContext } from "./navigation-context";
 import { MenuItemButton } from "./menu-item-button";
 import { MenuItemLink } from "./menu-item-link";
-import { Button } from "@features/ui";
+import { Button, ButtonColor, ButtonIcon, ButtonSize } from "@features/ui";
 import { breakpoint, color, space, zIndex } from "@styles/theme";
 
 const menuItems = [
@@ -79,7 +79,7 @@ const Logo = styled.img`
 
 const MenuButton = styled(Button)`
   @media (min-width: ${breakpoint("desktop")}) {
-    display: none;
+    display: none !important;
   }
 `;
 
@@ -173,7 +173,11 @@ export function SidebarNavigation() {
             }
             alt="logo"
           />
-          <MenuButton onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}>
+          <MenuButton
+            size={ButtonSize.md}
+            color={ButtonColor.darkGray}
+            onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
+          >
             <MenuIcon
               src={isMobileMenuOpen ? "/icons/close.svg" : "/icons/menu.svg"}
               alt={isMobileMenuOpen ? "close menu" : "open menu"}
@@ -206,6 +210,9 @@ export function SidebarNavigation() {
               iconSrc="/icons/arrow-left.svg"
               isCollapsed={isSidebarCollapsed}
               onClick={() => toggleSidebar()}
+              size={ButtonSize.xl}
+              color={ButtonColor.darkGray}
+              icon={ButtonIcon.leading}
             />
           </List>
         </Nav>
