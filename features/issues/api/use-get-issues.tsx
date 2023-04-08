@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getIssues } from "@api/issues";
 import type { Page } from "@typings/page.types";
 import type { Issue } from "@api/issues.types";
+import { useIssueContext } from "../components/issue-filter/issue-context";
 
 const QUERY_KEY = "issues";
 
@@ -22,11 +23,17 @@ export function useGetIssues(page: number) {
 
   // Prefetch the next page!
   const queryClient = useQueryClient();
+  const { initIssues, filtered, issues } = useIssueContext();
   useEffect(() => {
     if (query.data?.meta.hasNextPage) {
       queryClient.prefetchQuery(getQueryKey(page + 1), ({ signal }) =>
         getIssues(page + 1, { signal })
       );
+    }
+
+    if (query.data?.items) {
+      console.log(query.data?.items);
+      initIssues(query.data.items);
     }
   }, [query.data, page, queryClient]);
   return query;

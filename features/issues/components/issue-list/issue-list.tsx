@@ -5,6 +5,8 @@ import { ProjectLanguage } from "@api/projects.types";
 import { useGetProjects } from "@features/projects";
 import { useGetIssues } from "../../api/use-get-issues";
 import { IssueRow } from "./issue-row";
+import { useEffect } from "react";
+import { useIssueContext } from "../issue-filter/issue-context";
 
 const Container = styled.div`
   background: white;
@@ -73,6 +75,13 @@ export function IssueList() {
 
   const issuesPage = useGetIssues(page);
   const projects = useGetProjects();
+  const { issues, filtered } = useIssueContext();
+
+  useEffect(() => {
+    if (issues.length > 0) {
+      console.log(`issuelist: ${issues}`);
+    }
+  }, [issues]);
 
   if (projects.isLoading || issuesPage.isLoading) {
     return <div>Loading</div>;
@@ -95,6 +104,7 @@ export function IssueList() {
     }),
     {} as Record<string, ProjectLanguage>
   );
+
   const { items, meta } = issuesPage.data || {};
 
   return (
@@ -109,7 +119,7 @@ export function IssueList() {
           </HeaderRow>
         </thead>
         <tbody>
-          {(items || []).map((issue) => (
+          {(filtered ? filtered : items || []).map((issue) => (
             <IssueRow
               key={issue.id}
               issue={issue}
