@@ -8,6 +8,7 @@ interface IssueContextTypes {
   filterIssuesByStatus: (filter: string) => void;
   filterIssuesByLevel: (filter: string) => void;
   clearFilterStatus: () => void;
+  clearFilterLevel: () => void;
 }
 
 const IssueContext = createContext<IssueContextTypes | null>(null);

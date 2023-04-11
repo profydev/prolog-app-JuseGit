@@ -41,15 +41,18 @@ export const IssueFilter = () => {
   const [status, setStatus] = useState("default");
   const [level, setLevel] = useState("default");
   const context = useIssueContext();
-  const { filterIssuesByStatus, filterIssuesByLevel, clearFilterStatus } =
-    context;
+  const {
+    filterIssuesByStatus,
+    filterIssuesByLevel,
+    clearFilterStatus,
+    clearFilterLevel,
+  } = context;
 
   const handleStatusChange = (selected: string) => {
     //setStatus(selected);
     if (selected !== "default") {
       filterIssuesByStatus(selected);
     } else {
-      console.log("clearing status");
       clearFilterStatus();
     }
   };
@@ -58,7 +61,7 @@ export const IssueFilter = () => {
     if (selected !== "default") {
       filterIssuesByLevel(selected);
     } else {
-      clearFilterStatus();
+      clearFilterLevel();
     }
   };
 

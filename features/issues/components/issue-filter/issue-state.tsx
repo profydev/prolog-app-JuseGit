@@ -30,9 +30,6 @@ type IssuesStateProps = {
 
 const issueReducer = (state: IssueState, action: IssueAction): IssueState => {
   console.log(`dispatched: ${action.type}, payload: ${action.payload}`);
-  const filter = action.type.substring(0, action.type.indexOf("_"));
-  console.log(filter);
-  const { [filter]: removedProps, ...curFilters } = state.activeFilters;
 
   switch (action.type) {
     case IssueActionType.INIT_ISSUES:
@@ -44,56 +41,51 @@ const issueReducer = (state: IssueState, action: IssueAction): IssueState => {
     case IssueActionType.FILTER_ISSUES_BY_STATUS:
     case IssueActionType.FILTER_ISSUES_BY_LEVEL:
     case IssueActionType.FILTER_ISSUES_BY_SEARCH:
-      return {
-        ...state,
-        activeFilters: {
-          ...state.activeFilters,
-          [action.type]:
-            typeof action.payload === "string" ? action.payload : "",
-        },
-        filtered: state.issues?.filter((issue) => {
-          return Object.keys(state.activeFilters).every((key) => {
-            return (
-              makeFilters(
-                state.activeFilters,
-                key,
-                typeof action.payload === "string" ? action.payload : ""
-              )[key] === issue[key as keyof Issue]
-            );
-          });
-        }),
-      };
+      return updateFilters(state, action);
 
     case IssueActionType.CLEAR_FILTER_STATUS:
     case IssueActionType.CLEAR_FILTER_LEVEL:
     case IssueActionType.CLEAR_FILTER_SEARCH:
-      console.log(`curfilters: ${curFilters}`);
-
-      return {
-        ...state,
-        activeFilters: curFilters,
-        filtered:
-          JSON.stringify(curFilters) === "{}"
-            ? null
-            : state.issues?.filter((issue) => {
-                return Object.keys(state.activeFilters).every((key) => {
-                  return state.activeFilters[key] === issue[key as keyof Issue];
-                });
-              }),
-      };
+      return clearFilters(state, action);
 
     default:
       return state;
   }
 };
 
-const makeFilters = (
-  filters: { [propKey: string]: string },
-  newKey: string,
-  newValue: string
-) => {
-  const newFilters = { ...filters, [newKey]: newValue };
-  return newFilters;
+const updateFilters = (state: IssueState, action: IssueAction) => {
+  const updatedFilters = {
+    ...state.activeFilters,
+    [action.type]: typeof action.payload === "string" ? action.payload : "",
+  };
+
+  return {
+    ...state,
+    activeFilters: updatedFilters,
+    filtered: state.issues?.filter((issue) => {
+      return Object.keys(updatedFilters).every((key) => {
+        return updatedFilters[key] === issue[key as keyof Issue];
+      });
+    }),
+  };
+};
+
+const clearFilters = (state: IssueState, action: IssueAction) => {
+  const filter = action.type.substring(0, action.type.indexOf("_"));
+  const { [filter]: removedProps, ...curFilters } = state.activeFilters;
+
+  return {
+    ...state,
+    activeFilters: curFilters,
+    filtered:
+      JSON.stringify(curFilters) === "{}"
+        ? null
+        : state.issues?.filter((issue) => {
+            return Object.keys(curFilters).every((key) => {
+              return curFilters[key] === issue[key as keyof Issue];
+            });
+          }),
+  };
 };
 
 export const IssuesState = ({ children }: IssuesStateProps) => {
@@ -136,6 +128,14 @@ export const IssuesState = ({ children }: IssuesStateProps) => {
     });
   }, []);
 
+  // Clear filter
+  const clearFilterLevel = useCallback(() => {
+    dispatch({
+      type: IssueActionType.CLEAR_FILTER_LEVEL,
+      payload: "",
+    });
+  }, []);
+
   return (
     <IssueContext.Provider
       value={{
@@ -145,6 +145,7 @@ export const IssuesState = ({ children }: IssuesStateProps) => {
         filterIssuesByStatus,
         filterIssuesByLevel,
         clearFilterStatus,
+        clearFilterLevel,
       }}
     >
       {children}
