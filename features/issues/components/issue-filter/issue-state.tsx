@@ -19,29 +19,63 @@ export interface IssueState {
   activeFilters: { [propKey: string]: string };
 }
 
-interface IssueAction {
-  type: IssueActionType;
-  payload: string | Issue[]; //The filter
-}
+type InitIssues = {
+  type: IssueActionType.INIT_ISSUES;
+  payload: Issue[];
+};
+
+type FilterByStatus = {
+  type: IssueActionType.FILTER_ISSUES_BY_STATUS;
+  payload: string;
+};
+
+type FilterByLevel = {
+  type: IssueActionType.FILTER_ISSUES_BY_LEVEL;
+  payload: string;
+};
+
+type FilterBySearch = {
+  type: IssueActionType.FILTER_ISSUES_BY_SEARCH;
+  payload: string;
+};
+
+type ClearFilterStatus = {
+  type: IssueActionType.CLEAR_FILTER_STATUS;
+};
+
+type ClearFilterLevel = {
+  type: IssueActionType.CLEAR_FILTER_LEVEL;
+};
+
+type ClearFilterSearch = {
+  type: IssueActionType.CLEAR_FILTER_SEARCH;
+};
+
+type IssuesAction =
+  | InitIssues
+  | FilterByStatus
+  | FilterByLevel
+  | FilterBySearch
+  | ClearFilterStatus
+  | ClearFilterLevel
+  | ClearFilterSearch;
 
 type IssuesStateProps = {
   children: ReactNode;
 };
 
-const issueReducer = (state: IssueState, action: IssueAction): IssueState => {
-  console.log(`dispatched: ${action.type}, payload: ${action.payload}`);
-
+const issueReducer = (state: IssueState, action: IssuesAction): IssueState => {
   switch (action.type) {
     case IssueActionType.INIT_ISSUES:
       return {
         ...state,
-        issues: typeof action.payload === "string" ? [] : action.payload,
+        issues: action.payload,
       };
 
     case IssueActionType.FILTER_ISSUES_BY_STATUS:
     case IssueActionType.FILTER_ISSUES_BY_LEVEL:
     case IssueActionType.FILTER_ISSUES_BY_SEARCH:
-      return updateFilters(state, action);
+      return updateFilters(state, action.type, action.payload);
 
     case IssueActionType.CLEAR_FILTER_STATUS:
     case IssueActionType.CLEAR_FILTER_LEVEL:
@@ -53,10 +87,14 @@ const issueReducer = (state: IssueState, action: IssueAction): IssueState => {
   }
 };
 
-const updateFilters = (state: IssueState, action: IssueAction) => {
+const updateFilters = (
+  state: IssueState,
+  key: IssueActionType,
+  filter: string
+) => {
   const updatedFilters = {
     ...state.activeFilters,
-    [action.type]: typeof action.payload === "string" ? action.payload : "",
+    [key]: filter,
   };
 
   return {
@@ -70,7 +108,7 @@ const updateFilters = (state: IssueState, action: IssueAction) => {
   };
 };
 
-const clearFilters = (state: IssueState, action: IssueAction) => {
+const clearFilters = (state: IssueState, action: IssuesAction) => {
   const filter = action.type.substring(0, action.type.indexOf("_"));
   const { [filter]: removedProps, ...curFilters } = state.activeFilters;
 
@@ -124,7 +162,6 @@ export const IssuesState = ({ children }: IssuesStateProps) => {
   const clearFilterStatus = useCallback(() => {
     dispatch({
       type: IssueActionType.CLEAR_FILTER_STATUS,
-      payload: "",
     });
   }, []);
 
@@ -132,7 +169,6 @@ export const IssuesState = ({ children }: IssuesStateProps) => {
   const clearFilterLevel = useCallback(() => {
     dispatch({
       type: IssueActionType.CLEAR_FILTER_LEVEL,
-      payload: "",
     });
   }, []);
 

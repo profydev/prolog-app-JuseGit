@@ -23,7 +23,7 @@ export function useGetIssues(page: number) {
 
   // Prefetch the next page!
   const queryClient = useQueryClient();
-  const { initIssues, filtered, issues } = useIssueContext();
+  const { initIssues } = useIssueContext();
   useEffect(() => {
     if (query.data?.meta.hasNextPage) {
       queryClient.prefetchQuery(getQueryKey(page + 1), ({ signal }) =>
@@ -32,9 +32,8 @@ export function useGetIssues(page: number) {
     }
 
     if (query.data?.items) {
-      console.log(query.data?.items);
       initIssues(query.data.items);
     }
-  }, [query.data, page, queryClient]);
+  }, [query.data, page, queryClient, initIssues]);
   return query;
 }

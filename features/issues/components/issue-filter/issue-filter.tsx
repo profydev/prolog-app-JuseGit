@@ -1,5 +1,4 @@
 import { Select, SelectOption } from "@features/ui";
-import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useIssueContext } from "./issue-context";
 
@@ -38,8 +37,6 @@ const Container = styled.div`
 `;
 
 export const IssueFilter = () => {
-  const [status, setStatus] = useState("default");
-  const [level, setLevel] = useState("default");
   const context = useIssueContext();
   const {
     filterIssuesByStatus,
