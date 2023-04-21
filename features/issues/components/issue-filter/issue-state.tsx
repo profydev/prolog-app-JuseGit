@@ -1,27 +1,25 @@
-import { Issue } from "@api/issues.types";
+import { IssueLevel, IssueStatus } from "@api/issues.types";
 import React, { ReactNode, useCallback, useReducer } from "react";
 import { IssueContext } from "./issue-context";
 
 export enum IssueActionType {
-  INIT_ISSUES = "INIT_ISSUES",
   FILTER_ISSUES_BY_STATUS = "status",
   FILTER_ISSUES_BY_LEVEL = "level",
-  FILTER_ISSUES_BY_SEARCH = "search",
+  FILTER_ISSUES_BY_PROJECT = "project",
   CLEAR_FILTER_STATUS = "status_clear",
   CLEAR_FILTER_LEVEL = "level_clear",
-  CLEAR_FILTER_SEARCH = "search_clear",
+  CLEAR_FILTER_PROJECT = "project_clear",
 }
 
 // An interface for our state
 export interface IssueState {
-  issues: Issue[];
-  filtered: Issue[] | null;
-  activeFilters: { [propKey: string]: string };
+  activeFilters: { [propKey: string]: string | undefined };
 }
 
-type InitIssues = {
-  type: IssueActionType.INIT_ISSUES;
-  payload: Issue[];
+type IssueFilter = {
+  level: IssueLevel;
+  status: IssueStatus;
+  project: string;
 };
 
 type FilterByStatus = {
@@ -34,8 +32,8 @@ type FilterByLevel = {
   payload: string;
 };
 
-type FilterBySearch = {
-  type: IssueActionType.FILTER_ISSUES_BY_SEARCH;
+type FilterByProject = {
+  type: IssueActionType.FILTER_ISSUES_BY_PROJECT;
   payload: string;
 };
 
@@ -47,18 +45,17 @@ type ClearFilterLevel = {
   type: IssueActionType.CLEAR_FILTER_LEVEL;
 };
 
-type ClearFilterSearch = {
-  type: IssueActionType.CLEAR_FILTER_SEARCH;
+type ClearFilterProject = {
+  type: IssueActionType.CLEAR_FILTER_PROJECT;
 };
 
 type IssuesAction =
-  | InitIssues
   | FilterByStatus
   | FilterByLevel
-  | FilterBySearch
+  | FilterByProject
   | ClearFilterStatus
   | ClearFilterLevel
-  | ClearFilterSearch;
+  | ClearFilterProject;
 
 type IssuesStateProps = {
   children: ReactNode;
@@ -66,20 +63,14 @@ type IssuesStateProps = {
 
 const issueReducer = (state: IssueState, action: IssuesAction): IssueState => {
   switch (action.type) {
-    case IssueActionType.INIT_ISSUES:
-      return {
-        ...state,
-        issues: action.payload,
-      };
-
     case IssueActionType.FILTER_ISSUES_BY_STATUS:
     case IssueActionType.FILTER_ISSUES_BY_LEVEL:
-    case IssueActionType.FILTER_ISSUES_BY_SEARCH:
+    case IssueActionType.FILTER_ISSUES_BY_PROJECT:
       return updateFilters(state, action.type, action.payload);
 
     case IssueActionType.CLEAR_FILTER_STATUS:
     case IssueActionType.CLEAR_FILTER_LEVEL:
-    case IssueActionType.CLEAR_FILTER_SEARCH:
+    case IssueActionType.CLEAR_FILTER_PROJECT:
       return clearFilters(state, action);
 
     default:
@@ -92,55 +83,34 @@ const updateFilters = (
   key: IssueActionType,
   filter: string
 ) => {
-  const updatedFilters = {
-    ...state.activeFilters,
-    [key]: filter,
-  };
-
   return {
     ...state,
-    activeFilters: updatedFilters,
-    filtered: state.issues?.filter((issue) => {
-      return Object.keys(updatedFilters).every((key) => {
-        return updatedFilters[key] === issue[key as keyof Issue];
-      });
-    }),
+    activeFilters: {
+      ...state.activeFilters,
+      [key]: filter,
+    },
   };
 };
 
 const clearFilters = (state: IssueState, action: IssuesAction) => {
   const filter = action.type.substring(0, action.type.indexOf("_"));
-  const { [filter]: removedProps, ...curFilters } = state.activeFilters;
 
   return {
     ...state,
-    activeFilters: curFilters,
-    filtered:
-      JSON.stringify(curFilters) === "{}"
-        ? null
-        : state.issues?.filter((issue) => {
-            return Object.keys(curFilters).every((key) => {
-              return curFilters[key] === issue[key as keyof Issue];
-            });
-          }),
+    activeFilters: { ...state.activeFilters, [filter]: undefined },
   };
 };
 
 export const IssuesState = ({ children }: IssuesStateProps) => {
   const initialState: IssueState = {
-    issues: [],
-    filtered: null,
-    activeFilters: {},
+    activeFilters: {
+      level: undefined,
+      status: undefined,
+      project: undefined,
+    },
   };
 
   const [state, dispatch] = useReducer(issueReducer, initialState);
-
-  const initIssues = useCallback((issues: Issue[]) => {
-    dispatch({
-      type: IssueActionType.INIT_ISSUES,
-      payload: issues,
-    });
-  }, []);
 
   // Filter issues by status
   const filterIssuesByStatus = useCallback((filter: string) => {
@@ -158,30 +128,45 @@ export const IssuesState = ({ children }: IssuesStateProps) => {
     });
   }, []);
 
-  // Clear filter
+  // Filter issues by level
+  const filterIssuesByProject = useCallback((filter: string) => {
+    dispatch({
+      type: IssueActionType.FILTER_ISSUES_BY_PROJECT,
+      payload: filter,
+    });
+  }, []);
+
+  // Clear status filter
   const clearFilterStatus = useCallback(() => {
     dispatch({
       type: IssueActionType.CLEAR_FILTER_STATUS,
     });
   }, []);
 
-  // Clear filter
+  // Clear level filter
   const clearFilterLevel = useCallback(() => {
     dispatch({
       type: IssueActionType.CLEAR_FILTER_LEVEL,
     });
   }, []);
 
+  // Clear project filter
+  const clearFilterProject = useCallback(() => {
+    dispatch({
+      type: IssueActionType.CLEAR_FILTER_PROJECT,
+    });
+  }, []);
+
   return (
     <IssueContext.Provider
       value={{
-        issues: state.issues,
-        filtered: state.filtered,
-        initIssues,
+        activeFilters: state.activeFilters,
         filterIssuesByStatus,
         filterIssuesByLevel,
+        filterIssuesByProject,
         clearFilterStatus,
         clearFilterLevel,
+        clearFilterProject,
       }}
     >
       {children}

@@ -1,12 +1,14 @@
-import { useRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
 import styled from "styled-components";
 import { color, space, textFont } from "@styles/theme";
 import { ProjectLanguage } from "@api/projects.types";
 import { useGetProjects } from "@features/projects";
 import { useGetIssues } from "../../api/use-get-issues";
 import { IssueRow } from "./issue-row";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useIssueContext } from "../issue-filter/issue-context";
+import { IssueLevel, IssueStatus } from "@api/issues.types";
+import { IssueActionType } from "../issue-filter/issue-state";
 
 const Container = styled.div`
   background: white;
@@ -70,18 +72,75 @@ export function IssueList() {
   const navigateToPage = (newPage: number) =>
     router.push({
       pathname: router.pathname,
-      query: { page: newPage },
+      query: {
+        page: newPage,
+      },
     });
 
-  const issuesPage = useGetIssues(page);
+  const updateURL = useCallback(
+    (
+      newPage: number,
+      newLevel?: string,
+      newStatus?: string,
+      newProject?: string
+    ) =>
+      router.replace(
+        {
+          pathname: router.pathname,
+          query: {
+            page: newPage,
+            ...(newLevel && { level: newLevel }),
+            ...(newStatus && { status: newStatus }),
+            ...(newProject && { project: newProject }),
+          },
+        },
+        undefined,
+        { shallow: true }
+      ),
+    [router]
+  );
+
+  const { activeFilters } = useIssueContext();
   const projects = useGetProjects();
-  const { issues, filtered } = useIssueContext();
+  const issuesPage = useGetIssues(
+    page,
+    activeFilters.level as IssueLevel,
+    activeFilters.status as IssueStatus,
+    activeFilters.project
+  );
+
+  type IssueFilter = {
+    level: string;
+    status: string;
+    project: string;
+  };
+
+  const isValidParam = useCallback(
+    (k: string): k is keyof IssueFilter =>
+      ["level", "status", "project"].includes(k),
+    []
+  );
+
+  const filterChanged = useCallback(
+    () =>
+      Object.keys(activeFilters).some(
+        (key) =>
+          isValidParam(key) &&
+          activeFilters[key] !== router.query[key as keyof IssueFilter]
+      ),
+    [activeFilters, router.query, isValidParam]
+  );
 
   useEffect(() => {
-    if (issues.length > 0) {
-      console.log(`issuelist: ${issues}`);
+    if (filterChanged()) {
+      updateURL(
+        page,
+        activeFilters.level,
+        activeFilters.status,
+        activeFilters.project
+      );
     }
-  }, [issues]);
+  }, [updateURL, filterChanged, page, activeFilters]);
 
   if (projects.isLoading || issuesPage.isLoading) {
     return <div>Loading</div>;
@@ -119,7 +178,7 @@ export function IssueList() {
           </HeaderRow>
         </thead>
         <tbody>
-          {(filtered ? filtered : items || []).map((issue) => (
+          {(items || []).map((issue) => (
             <IssueRow
               key={issue.id}
               issue={issue}

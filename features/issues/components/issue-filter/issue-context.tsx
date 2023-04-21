@@ -1,14 +1,13 @@
-import { Issue } from "@api/issues.types";
 import { createContext, useContext } from "react";
 
 interface IssueContextTypes {
-  issues: Issue[];
-  filtered: Issue[] | null;
-  initIssues: (issues: Issue[]) => void;
+  activeFilters: { [propKey: string]: string | undefined };
   filterIssuesByStatus: (filter: string) => void;
   filterIssuesByLevel: (filter: string) => void;
+  filterIssuesByProject: (filter: string) => void;
   clearFilterStatus: () => void;
   clearFilterLevel: () => void;
+  clearFilterProject: () => void;
 }
 
 const IssueContext = createContext<IssueContextTypes | null>(null);

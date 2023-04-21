@@ -1,4 +1,5 @@
-import { Select, SelectOption } from "@features/ui";
+import { Input, Select, SelectOption } from "@features/ui";
+import { ChangeEventHandler } from "react";
 import styled from "styled-components";
 import { useIssueContext } from "./issue-context";
 
@@ -36,13 +37,23 @@ const Container = styled.div`
   gap: 8px;
 `;
 
+const defaultIconProps = {
+  color: "gray",
+  hasMask: true,
+  content: "/icons/circle.svg",
+  width: "1.25em",
+  height: "1.25em",
+};
+
 export const IssueFilter = () => {
   const context = useIssueContext();
   const {
     filterIssuesByStatus,
     filterIssuesByLevel,
+    filterIssuesByProject,
     clearFilterStatus,
     clearFilterLevel,
+    clearFilterProject,
   } = context;
 
   const handleStatusChange = (selected: string) => {
@@ -59,6 +70,14 @@ export const IssueFilter = () => {
       filterIssuesByLevel(selected);
     } else {
       clearFilterLevel();
+    }
+  };
+
+  const handleSearchChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    if (event.target.value !== "") {
+      filterIssuesByProject(event.target.value);
+    } else {
+      clearFilterProject();
     }
   };
 
@@ -84,6 +103,16 @@ export const IssueFilter = () => {
         errorMsg=""
         width="260px"
         onChange={handleLevelChange}
+      />
+      <Input
+        icon={defaultIconProps}
+        name="test"
+        label=""
+        width="260px"
+        disabled={false}
+        error={false}
+        errorMsg=""
+        onChange={handleSearchChange}
       />
     </Container>
   );
