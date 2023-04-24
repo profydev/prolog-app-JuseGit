@@ -34,13 +34,16 @@ const levelOptions: readonly SelectOption[] = [
 
 const Container = styled.div`
   display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 2.625em;
   gap: 8px;
 `;
 
 const defaultIconProps = {
   color: "gray",
   hasMask: true,
-  content: "/icons/circle.svg",
+  content: "/icons/search.svg",
   width: "1.25em",
   height: "1.25em",
 };
@@ -91,7 +94,7 @@ export const IssueFilter = () => {
         disabled={false}
         isEmpty={true}
         errorMsg=""
-        width="260px"
+        width="10em"
         onChange={handleStatusChange}
       />
       <Select
@@ -101,7 +104,7 @@ export const IssueFilter = () => {
         disabled={false}
         isEmpty={true}
         errorMsg=""
-        width="260px"
+        width="10em"
         onChange={handleLevelChange}
       />
       <Input
@@ -109,7 +112,7 @@ export const IssueFilter = () => {
         name="issue-project-filter"
         label=""
         placeholder="Project Name"
-        width="260px"
+        width="17.5em"
         disabled={false}
         error={false}
         errorMsg=""
