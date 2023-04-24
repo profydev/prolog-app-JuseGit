@@ -5,6 +5,9 @@ import { ProjectLanguage } from "@api/projects.types";
 import { useGetProjects } from "@features/projects";
 import { useGetIssues } from "../../api/use-get-issues";
 import { IssueRow } from "./issue-row";
+import { useCallback, useEffect } from "react";
+import { useIssueContext } from "../issue-filter/issue-context";
+import { IssueLevel, IssueStatus } from "@api/issues.types";
 
 const Container = styled.div`
   background: white;
@@ -68,11 +71,75 @@ export function IssueList() {
   const navigateToPage = (newPage: number) =>
     router.push({
       pathname: router.pathname,
-      query: { page: newPage },
+      query: {
+        page: newPage,
+      },
     });
 
-  const issuesPage = useGetIssues(page);
+  const updateURL = useCallback(
+    (
+      newPage: number,
+      newLevel?: string,
+      newStatus?: string,
+      newProject?: string
+    ) =>
+      router.replace(
+        {
+          pathname: router.pathname,
+          query: {
+            page: newPage,
+            ...(newLevel && { level: newLevel }),
+            ...(newStatus && { status: newStatus }),
+            ...(newProject && { project: newProject }),
+          },
+        },
+        undefined,
+        { shallow: true }
+      ),
+    [router]
+  );
+
+  const { activeFilters } = useIssueContext();
   const projects = useGetProjects();
+  const issuesPage = useGetIssues(
+    page,
+    activeFilters.level as IssueLevel,
+    activeFilters.status as IssueStatus,
+    activeFilters.project
+  );
+
+  type IssueFilter = {
+    level: string;
+    status: string;
+    project: string;
+  };
+
+  const isValidParam = useCallback(
+    (k: string): k is keyof IssueFilter =>
+      ["level", "status", "project"].includes(k),
+    []
+  );
+
+  const filterChanged = useCallback(
+    () =>
+      Object.keys(activeFilters).some(
+        (key) =>
+          isValidParam(key) &&
+          activeFilters[key] !== router.query[key as keyof IssueFilter]
+      ),
+    [activeFilters, router.query, isValidParam]
+  );
+
+  useEffect(() => {
+    if (filterChanged()) {
+      updateURL(
+        page,
+        activeFilters.level,
+        activeFilters.status,
+        activeFilters.project
+      );
+    }
+  }, [updateURL, filterChanged, page, activeFilters]);
 
   if (projects.isLoading || issuesPage.isLoading) {
     return <div>Loading</div>;
@@ -95,6 +162,7 @@ export function IssueList() {
     }),
     {} as Record<string, ProjectLanguage>
   );
+
   const { items, meta } = issuesPage.data || {};
 
   return (
