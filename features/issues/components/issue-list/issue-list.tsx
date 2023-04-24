@@ -1,4 +1,4 @@
-import { NextRouter, useRouter } from "next/router";
+import { useRouter } from "next/router";
 import styled from "styled-components";
 import { color, space, textFont } from "@styles/theme";
 import { ProjectLanguage } from "@api/projects.types";
@@ -8,7 +8,6 @@ import { IssueRow } from "./issue-row";
 import { useCallback, useEffect } from "react";
 import { useIssueContext } from "../issue-filter/issue-context";
 import { IssueLevel, IssueStatus } from "@api/issues.types";
-import { IssueActionType } from "../issue-filter/issue-state";
 
 const Container = styled.div`
   background: white;

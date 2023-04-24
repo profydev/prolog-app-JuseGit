@@ -12,7 +12,7 @@ export type FilterOptions = {
 const statusOptions: readonly SelectOption[] = [
   {
     value: "default",
-    label: "No status filter",
+    label: "Status",
     isFixed: false,
     isDisabled: false,
   },
@@ -23,7 +23,7 @@ const statusOptions: readonly SelectOption[] = [
 const levelOptions: readonly SelectOption[] = [
   {
     value: "default",
-    label: "No level filter",
+    label: "Level",
     isFixed: false,
     isDisabled: false,
   },
@@ -106,8 +106,9 @@ export const IssueFilter = () => {
       />
       <Input
         icon={defaultIconProps}
-        name="test"
+        name="issue-project-filter"
         label=""
+        placeholder="Project Name"
         width="260px"
         disabled={false}
         error={false}
