@@ -51,6 +51,7 @@ const defaultIconProps = {
 export const IssueFilter = () => {
   const context = useIssueContext();
   const {
+    activeFilters,
     filterIssuesByStatus,
     filterIssuesByLevel,
     filterIssuesByProject,
@@ -117,6 +118,7 @@ export const IssueFilter = () => {
         error={false}
         errorMsg=""
         onChange={handleSearchChange}
+        value={activeFilters.project ? activeFilters.project : ""}
       />
     </Container>
   );

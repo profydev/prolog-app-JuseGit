@@ -99,7 +99,7 @@ export function IssueList() {
     [router]
   );
 
-  const { activeFilters } = useIssueContext();
+  const { activeFilters, filterIssuesByProject } = useIssueContext();
   const projects = useGetProjects();
   const issuesPage = useGetIssues(
     page,
@@ -107,39 +107,6 @@ export function IssueList() {
     activeFilters.status as IssueStatus,
     activeFilters.project
   );
-
-  type IssueFilter = {
-    level: string;
-    status: string;
-    project: string;
-  };
-
-  const isValidParam = useCallback(
-    (k: string): k is keyof IssueFilter =>
-      ["level", "status", "project"].includes(k),
-    []
-  );
-
-  const filterChanged = useCallback(
-    () =>
-      Object.keys(activeFilters).some(
-        (key) =>
-          isValidParam(key) &&
-          activeFilters[key] !== router.query[key as keyof IssueFilter]
-      ),
-    [activeFilters, router.query, isValidParam]
-  );
-
-  useEffect(() => {
-    if (filterChanged()) {
-      updateURL(
-        page,
-        activeFilters.level,
-        activeFilters.status,
-        activeFilters.project
-      );
-    }
-  }, [updateURL, filterChanged, page, activeFilters]);
 
   if (projects.isLoading || issuesPage.isLoading) {
     return <div>Loading</div>;
