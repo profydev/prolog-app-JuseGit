@@ -4,7 +4,7 @@ interface IssueContextTypes {
   activeFilters: { [propKey: string]: string | undefined };
   filterIssuesByStatus: (filter: string) => void;
   filterIssuesByLevel: (filter: string) => void;
-  filterIssuesByProject: (filter: string) => void;
+  filterIssuesByProject: (filter: string, newURL: boolean) => void;
   clearFilterStatus: () => void;
   clearFilterLevel: () => void;
   clearFilterProject: () => void;

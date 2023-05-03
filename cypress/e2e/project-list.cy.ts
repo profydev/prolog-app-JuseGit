@@ -97,5 +97,21 @@ describe("Project List", () => {
       // wait for request to resolve
       cy.wait("@getProjectsError").its("response.statusCode").should("eq", 500);
     });
+
+    it.only("directs to issues page with pre-selected project filter", () => {
+      cy.get("main").find("li:first").find("a").contains("View issues").click();
+
+      cy.wait(500);
+
+      cy.url().should(
+        "eq",
+        "http://localhost:3000/dashboard/issues?project=Frontend%20-%20Web%20Test"
+      );
+
+      cy.get('input[name="issue-project-filter"]').should(
+        "have.value",
+        "Frontend - Web Test"
+      );
+    });
   });
 });

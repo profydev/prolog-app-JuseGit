@@ -51,6 +51,7 @@ const defaultIconProps = {
 export const IssueFilter = () => {
   const context = useIssueContext();
   const {
+    activeFilters,
     filterIssuesByStatus,
     filterIssuesByLevel,
     filterIssuesByProject,
@@ -78,7 +79,7 @@ export const IssueFilter = () => {
 
   const handleSearchChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     if (event.target.value !== "") {
-      filterIssuesByProject(event.target.value);
+      filterIssuesByProject(event.target.value, true);
     } else {
       clearFilterProject();
     }
@@ -117,6 +118,7 @@ export const IssueFilter = () => {
         error={false}
         errorMsg=""
         onChange={handleSearchChange}
+        value={activeFilters.project ? activeFilters.project : ""}
       />
     </Container>
   );

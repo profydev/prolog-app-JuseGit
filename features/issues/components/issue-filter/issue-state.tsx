@@ -1,4 +1,4 @@
-import { IssueLevel, IssueStatus } from "@api/issues.types";
+import { useRouter } from "next/router";
 import React, { ReactNode, useCallback, useReducer } from "react";
 import { IssueContext } from "./issue-context";
 
@@ -15,12 +15,6 @@ export enum IssueActionType {
 export interface IssueState {
   activeFilters: { [propKey: string]: string | undefined };
 }
-
-type IssueFilter = {
-  level: IssueLevel;
-  status: IssueStatus;
-  project: string;
-};
 
 type FilterByStatus = {
   type: IssueActionType.FILTER_ISSUES_BY_STATUS;
@@ -111,51 +105,129 @@ export const IssuesState = ({ children }: IssuesStateProps) => {
   };
 
   const [state, dispatch] = useReducer(issueReducer, initialState);
+  const router = useRouter();
+  const page = Number(router.query.page || 1);
+
+  const updateURL = useCallback(
+    (
+      newPage: number,
+      newLevel?: string,
+      newStatus?: string,
+      newProject?: string
+    ) =>
+      router.replace(
+        {
+          pathname: router.pathname,
+          query: {
+            page: newPage,
+            ...(newLevel && { level: newLevel }),
+            ...(newStatus && { status: newStatus }),
+            ...(newProject && { project: newProject }),
+          },
+        },
+        undefined,
+        { shallow: true }
+      ),
+    [router]
+  );
 
   // Filter issues by status
-  const filterIssuesByStatus = useCallback((filter: string) => {
-    dispatch({
-      type: IssueActionType.FILTER_ISSUES_BY_STATUS,
-      payload: filter,
-    });
-  }, []);
+  const filterIssuesByStatus = useCallback(
+    (filter: string) => {
+      updateURL(
+        page,
+        state.activeFilters.level,
+        filter,
+        state.activeFilters.project
+      );
+
+      dispatch({
+        type: IssueActionType.FILTER_ISSUES_BY_STATUS,
+        payload: filter,
+      });
+    },
+    [page, state.activeFilters, updateURL]
+  );
 
   // Filter issues by level
-  const filterIssuesByLevel = useCallback((filter: string) => {
-    dispatch({
-      type: IssueActionType.FILTER_ISSUES_BY_LEVEL,
-      payload: filter,
-    });
-  }, []);
+  const filterIssuesByLevel = useCallback(
+    (filter: string) => {
+      updateURL(
+        page,
+        filter,
+        state.activeFilters.status,
+        state.activeFilters.project
+      );
+
+      dispatch({
+        type: IssueActionType.FILTER_ISSUES_BY_LEVEL,
+        payload: filter,
+      });
+    },
+    [page, state.activeFilters, updateURL]
+  );
 
   // Filter issues by level
-  const filterIssuesByProject = useCallback((filter: string) => {
-    dispatch({
-      type: IssueActionType.FILTER_ISSUES_BY_PROJECT,
-      payload: filter,
-    });
-  }, []);
+  const filterIssuesByProject = useCallback(
+    (filter: string, newURL: boolean) => {
+      if (newURL) {
+        updateURL(
+          page,
+          state.activeFilters.level,
+          state.activeFilters.status,
+          filter
+        );
+      }
+
+      dispatch({
+        type: IssueActionType.FILTER_ISSUES_BY_PROJECT,
+        payload: filter,
+      });
+    },
+    [page, state.activeFilters, updateURL]
+  );
 
   // Clear status filter
   const clearFilterStatus = useCallback(() => {
+    updateURL(
+      page,
+      state.activeFilters.level,
+      undefined,
+      state.activeFilters.project
+    );
+
     dispatch({
       type: IssueActionType.CLEAR_FILTER_STATUS,
     });
-  }, []);
+  }, [page, state.activeFilters, updateURL]);
 
   // Clear level filter
   const clearFilterLevel = useCallback(() => {
+    updateURL(
+      page,
+      undefined,
+      state.activeFilters.status,
+      state.activeFilters.project
+    );
+
     dispatch({
       type: IssueActionType.CLEAR_FILTER_LEVEL,
     });
-  }, []);
+  }, [page, state.activeFilters, updateURL]);
 
   // Clear project filter
   const clearFilterProject = useCallback(() => {
+    updateURL(
+      page,
+      state.activeFilters.level,
+      state.activeFilters.status,
+      undefined
+    );
+
     dispatch({
       type: IssueActionType.CLEAR_FILTER_PROJECT,
     });
-  }, []);
+  }, [page, state.activeFilters, updateURL]);
 
   return (
     <IssueContext.Provider
