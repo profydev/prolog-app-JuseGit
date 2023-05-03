@@ -5,7 +5,7 @@ import { ProjectLanguage } from "@api/projects.types";
 import { useGetProjects } from "@features/projects";
 import { useGetIssues } from "../../api/use-get-issues";
 import { IssueRow } from "./issue-row";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { useIssueContext } from "../issue-filter/issue-context";
 import { IssueLevel, IssueStatus } from "@api/issues.types";
 
@@ -76,29 +76,6 @@ export function IssueList() {
       },
     });
 
-  const updateURL = useCallback(
-    (
-      newPage: number,
-      newLevel?: string,
-      newStatus?: string,
-      newProject?: string
-    ) =>
-      router.replace(
-        {
-          pathname: router.pathname,
-          query: {
-            page: newPage,
-            ...(newLevel && { level: newLevel }),
-            ...(newStatus && { status: newStatus }),
-            ...(newProject && { project: newProject }),
-          },
-        },
-        undefined,
-        { shallow: true }
-      ),
-    [router]
-  );
-
   const { activeFilters, filterIssuesByProject } = useIssueContext();
   const projects = useGetProjects();
   const issuesPage = useGetIssues(
@@ -107,6 +84,20 @@ export function IssueList() {
     activeFilters.status as IssueStatus,
     activeFilters.project
   );
+
+  useEffect(() => {
+    const handleRouteChange = () => {
+      filterIssuesByProject(router.query.project as string, false);
+    };
+
+    router.events.on("routeChangeComplete", handleRouteChange);
+
+    // If the component is unmounted, unsubscribe
+    // from the event with the `off` method:
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, [router, filterIssuesByProject]);
 
   if (projects.isLoading || issuesPage.isLoading) {
     return <div>Loading</div>;

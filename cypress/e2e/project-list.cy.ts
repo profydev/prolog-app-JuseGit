@@ -108,8 +108,9 @@ describe("Project List", () => {
         "http://localhost:3000/dashboard/issues?project=Frontend%20-%20Web%20Test"
       );
 
-      cy.get('input[name="issue-project-filter"]').contains(
-        "Frontend%20-%20Web%20Test"
+      cy.get('input[name="issue-project-filter"]').should(
+        "have.value",
+        "Frontend - Web Test"
       );
     });
   });

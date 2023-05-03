@@ -79,7 +79,7 @@ export const IssueFilter = () => {
 
   const handleSearchChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     if (event.target.value !== "") {
-      filterIssuesByProject(event.target.value);
+      filterIssuesByProject(event.target.value, true);
     } else {
       clearFilterProject();
     }

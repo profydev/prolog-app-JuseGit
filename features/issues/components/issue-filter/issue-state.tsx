@@ -1,4 +1,3 @@
-import { IssueLevel, IssueStatus } from "@api/issues.types";
 import { useRouter } from "next/router";
 import React, { ReactNode, useCallback, useReducer } from "react";
 import { IssueContext } from "./issue-context";
@@ -16,12 +15,6 @@ export enum IssueActionType {
 export interface IssueState {
   activeFilters: { [propKey: string]: string | undefined };
 }
-
-type IssueFilter = {
-  level: IssueLevel;
-  status: IssueStatus;
-  project: string;
-};
 
 type FilterByStatus = {
   type: IssueActionType.FILTER_ISSUES_BY_STATUS;
@@ -176,13 +169,15 @@ export const IssuesState = ({ children }: IssuesStateProps) => {
 
   // Filter issues by level
   const filterIssuesByProject = useCallback(
-    (filter: string) => {
-      updateURL(
-        page,
-        state.activeFilters.level,
-        state.activeFilters.status,
-        filter
-      );
+    (filter: string, newURL: boolean) => {
+      if (newURL) {
+        updateURL(
+          page,
+          state.activeFilters.level,
+          state.activeFilters.status,
+          filter
+        );
+      }
 
       dispatch({
         type: IssueActionType.FILTER_ISSUES_BY_PROJECT,
