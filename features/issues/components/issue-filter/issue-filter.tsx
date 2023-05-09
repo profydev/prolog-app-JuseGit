@@ -1,5 +1,6 @@
+import { NavigationContext } from "@features/layout";
 import { Input, Select, SelectOption } from "@features/ui";
-import { ChangeEventHandler } from "react";
+import { ChangeEventHandler, useContext } from "react";
 import styled from "styled-components";
 import { useIssueContext } from "./issue-context";
 
@@ -32,11 +33,11 @@ const levelOptions: readonly SelectOption[] = [
   { value: "error", label: "Error" },
 ];
 
-const Container = styled.div`
+const Container = styled.div<{ isMobile: boolean }>`
   display: flex;
+  flex-direction: ${(props) => (props.isMobile ? "column" : "row")};
   justify-content: flex-end;
   align-items: center;
-  height: 2.625em;
   gap: 8px;
 `;
 
@@ -49,7 +50,6 @@ const defaultIconProps = {
 };
 
 export const IssueFilter = () => {
-  const context = useIssueContext();
   const {
     activeFilters,
     filterIssuesByStatus,
@@ -58,7 +58,9 @@ export const IssueFilter = () => {
     clearFilterStatus,
     clearFilterLevel,
     clearFilterProject,
-  } = context;
+  } = useIssueContext();
+
+  const { isMobile } = useContext(NavigationContext);
 
   const handleStatusChange = (selected: string) => {
     //setStatus(selected);
@@ -86,7 +88,7 @@ export const IssueFilter = () => {
   };
 
   return (
-    <Container>
+    <Container isMobile={isMobile}>
       {" "}
       <Select
         name="issue-status-filter"
@@ -95,7 +97,7 @@ export const IssueFilter = () => {
         disabled={false}
         isEmpty={true}
         errorMsg=""
-        width="10em"
+        width={isMobile ? "100%" : "10em"}
         onChange={handleStatusChange}
       />
       <Select
@@ -105,7 +107,7 @@ export const IssueFilter = () => {
         disabled={false}
         isEmpty={true}
         errorMsg=""
-        width="10em"
+        width={isMobile ? "100%" : "10em"}
         onChange={handleLevelChange}
       />
       <Input
@@ -113,7 +115,7 @@ export const IssueFilter = () => {
         name="issue-project-filter"
         label=""
         placeholder="Project Name"
-        width="17.5em"
+        width={isMobile ? "100%" : "17.5em"}
         disabled={false}
         error={false}
         errorMsg=""

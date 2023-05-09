@@ -22,10 +22,11 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   icon: InputIconProps;
 }
 
-const Container = styled.div`
+const Container = styled.div<{ width: string }>`
   display: flex;
   flex-direction: column;
   position: relative;
+  width: ${(props) => props.width};
 `;
 
 const CustomInput = styled.input<{
@@ -41,7 +42,7 @@ const CustomInput = styled.input<{
   box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
   border-radius: ${space(2)};
   outline: none;
-  padding: 0.625rem 0.875rem;
+  padding: 0.5rem 0.875rem;
   width: 100%;
 
   ${textFont("md", "regular")};
@@ -59,11 +60,9 @@ const CustomInput = styled.input<{
 const InputWrapper = styled.div<{
   preIcon: InputIconProps;
   error: boolean;
-  width: string;
 }>`
   display: flex;
   position: relative;
-  width: ${(props) => props.width};
 
   ${CustomInput} {
     padding-left: ${(props) => (props.preIcon ? "2.625rem" : "0.875rem")};
@@ -150,9 +149,9 @@ export const Input: FC<InputProps> = (props) => {
   );
 
   return (
-    <Container>
+    <Container width={width}>
       <Label htmlFor={name}>{label}</Label>
-      <InputWrapper preIcon={icon} error={error} width={width}>
+      <InputWrapper preIcon={icon} error={error}>
         <CustomInput
           name={name}
           disabled={disabled}
