@@ -5,9 +5,10 @@ import { ProjectLanguage } from "@api/projects.types";
 import { useGetProjects } from "@features/projects";
 import { useGetIssues } from "../../api/use-get-issues";
 import { IssueRow } from "./issue-row";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useIssueContext } from "../issue-filter/issue-context";
 import { IssueLevel, IssueStatus } from "@api/issues.types";
+import { NavigationContext } from "@features/layout";
 
 const Container = styled.div`
   background: white;
@@ -17,22 +18,24 @@ const Container = styled.div`
     0px 2px 4px -2px rgba(16, 24, 40, 0.06);
   border-radius: ${space(2)};
   overflow: hidden;
+  margin-top: ${space(6)};
 `;
 
-const Table = styled.table`
+const Table = styled.div<{ isMobile: boolean }>`
+  display: grid;
+  grid-template-columns: ${(props) =>
+    props.isMobile ? "repeat(12, 1fr)" : "9fr 1fr 1fr 1fr"};
   width: 100%;
   border-collapse: collapse;
 `;
 
-const HeaderRow = styled.tr`
-  border-bottom: 1px solid ${color("gray", 200)};
-`;
-
-const HeaderCell = styled.th`
+const HeaderCell = styled.span<{ isMobile: boolean }>`
+  display: ${(props) => (props.isMobile ? "none" : "block")};
   padding: ${space(3, 6)};
   text-align: left;
   color: ${color("gray", 500)};
   ${textFont("xs", "medium")};
+  border-bottom: 1px solid ${color("gray", 200)};
 `;
 
 const PaginationContainer = styled.div`
@@ -84,6 +87,7 @@ export function IssueList() {
     activeFilters.status as IssueStatus,
     activeFilters.project
   );
+  const { isMobile } = useContext(NavigationContext);
 
   useEffect(() => {
     const handleRouteChange = () => {
@@ -125,24 +129,20 @@ export function IssueList() {
 
   return (
     <Container>
-      <Table>
-        <thead>
-          <HeaderRow>
-            <HeaderCell>Issue</HeaderCell>
-            <HeaderCell>Level</HeaderCell>
-            <HeaderCell>Events</HeaderCell>
-            <HeaderCell>Users</HeaderCell>
-          </HeaderRow>
-        </thead>
-        <tbody>
-          {(items || []).map((issue) => (
-            <IssueRow
-              key={issue.id}
-              issue={issue}
-              projectLanguage={projectIdToLanguage[issue.projectId]}
-            />
-          ))}
-        </tbody>
+      <Table id="issues-list" isMobile={isMobile}>
+        <HeaderCell isMobile={isMobile}>Issue</HeaderCell>
+        <HeaderCell isMobile={isMobile}>Level</HeaderCell>
+        <HeaderCell isMobile={isMobile}>Events</HeaderCell>
+        <HeaderCell isMobile={isMobile}>Users</HeaderCell>
+
+        {(items || []).map((issue) => (
+          <IssueRow
+            id={`issue-row-${issue.id}`}
+            key={issue.id}
+            issue={issue}
+            projectLanguage={projectIdToLanguage[issue.projectId]}
+          />
+        ))}
       </Table>
       <PaginationContainer>
         <div>
