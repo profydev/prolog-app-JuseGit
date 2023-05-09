@@ -9,6 +9,7 @@ import { useContext } from "react";
 import { NavigationContext } from "@features/layout";
 
 type IssueRowProps = {
+  id: string;
   projectLanguage: ProjectLanguage;
   issue: Issue;
 };
@@ -69,13 +70,13 @@ const StatusTag = styled.span<{ isMobile: boolean }>`
   ${textFont("sm", "medium")}
 `;
 
-export function IssueRow({ projectLanguage, issue }: IssueRowProps) {
+export function IssueRow({ id, projectLanguage, issue }: IssueRowProps) {
   const { name, message, stack, level, numEvents, numUsers } = issue;
   const firstLineOfStackTrace = stack.split("\n")[1];
   const { isMobile } = useContext(NavigationContext);
 
   return (
-    <Row isMobile={isMobile}>
+    <Row id={id} isMobile={isMobile}>
       <IssueCell isMobile={isMobile}>
         <LanguageIcon
           src={`/icons/${projectLanguage}.svg`}

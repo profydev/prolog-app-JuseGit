@@ -37,8 +37,8 @@ describe("Issue List", () => {
 
     it("renders the issues", () => {
       cy.get("main")
-        .find("tbody")
-        .find("tr")
+        .get("[id=issues-list]")
+        .find("[id^=issue-row-]")
         .each(($el, index) => {
           const issue = mockIssues1.items[index];
           const firstLineOfStackTrace = issue.stack.split("\n")[1].trim();
@@ -58,19 +58,25 @@ describe("Issue List", () => {
       cy.get("@next-button").click();
       cy.get("@prev-button").should("not.have.attr", "disabled");
       cy.contains("Page 2 of 3");
-      cy.get("tbody tr:first").contains(mockIssues2.items[0].message);
+      cy.get("[id=issues-list] div:first").contains(
+        mockIssues2.items[0].message
+      );
 
       // test navigation to third and last page
       cy.get("@next-button").click();
       cy.get("@next-button").should("have.attr", "disabled");
       cy.contains("Page 3 of 3");
-      cy.get("tbody tr:first").contains(mockIssues3.items[0].message);
+      cy.get("[id=issues-list] div:first").contains(
+        mockIssues3.items[0].message
+      );
 
       // test navigation back to second page
       cy.get("@prev-button").click();
       cy.get("@next-button").should("not.have.attr", "disabled");
       cy.contains("Page 2 of 3");
-      cy.get("tbody tr:first").contains(mockIssues2.items[0].message);
+      cy.get("[id=issues-list] div:first").contains(
+        mockIssues2.items[0].message
+      );
     });
 
     it("persists page after reload", () => {
@@ -85,8 +91,12 @@ describe("Issue List", () => {
 
     it("shows the right number of events and users", () => {
       const issue = mockIssues1.items[0];
-      cy.get("tbody tr:first td:nth-last-child(2)").contains(issue.numEvents);
-      cy.get("tbody tr:first td:nth-last-child(1)").contains(issue.numUsers);
+      cy.get("[id=issues-list] div:first span:nth-last-child(2)").contains(
+        issue.numEvents
+      );
+      cy.get("[id=issues-list] div:first span:nth-last-child(1)").contains(
+        issue.numUsers
+      );
     });
   });
 });

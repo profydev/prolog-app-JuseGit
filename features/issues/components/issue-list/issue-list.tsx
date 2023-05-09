@@ -129,7 +129,7 @@ export function IssueList() {
 
   return (
     <Container>
-      <Table isMobile={isMobile}>
+      <Table id="issues-list" isMobile={isMobile}>
         <HeaderCell isMobile={isMobile}>Issue</HeaderCell>
         <HeaderCell isMobile={isMobile}>Level</HeaderCell>
         <HeaderCell isMobile={isMobile}>Events</HeaderCell>
@@ -137,6 +137,7 @@ export function IssueList() {
 
         {(items || []).map((issue) => (
           <IssueRow
+            id={`issue-row-${issue.id}`}
             key={issue.id}
             issue={issue}
             projectLanguage={projectIdToLanguage[issue.projectId]}
