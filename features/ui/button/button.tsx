@@ -27,6 +27,7 @@ export interface ButtonProps extends React.ComponentPropsWithoutRef<"button"> {
 }
 
 export enum ButtonIcon {
+  none = "none",
   leading = "leading",
   trailing = "trailing",
   only = "only",
@@ -181,6 +182,7 @@ const Container = styled.button<{
           background: ${color("primary", 600)};
           border: 1px solid ${color("primary", 600)};
           box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+
           &:hover {
             background: ${color("primary", 700)};
             border: 1px solid ${color("primary", 700)};
