@@ -1,15 +1,40 @@
 import styled from "styled-components";
 import { Routes } from "@config/routes";
+import Link from "next/link";
+import { Button, ButtonColor, ButtonSize, ButtonIcon } from "@features/ui";
+import { color, space, textFont } from "@styles/theme";
 
 const Header = styled.header`
   width: 100%;
   height: 80px;
-  padding: 0 2rem;
   box-sizing: border-box;
+`;
+
+const Container = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 100%;
   background: white;
+  padding: 0 2rem;
+  margin: 0 80px auto;
+`;
+
+const Nav = styled.ul`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+  padding: 0;
+`;
+
+const NavItem = styled.li`
+  & a {
+    ${textFont("md", "medium")};
+    color: ${color("gray", 500)};
+    text-decoration: none;
+  }
 `;
 
 const ContactButton = styled.button`
@@ -28,13 +53,43 @@ const ContactButton = styled.button`
   }
 `;
 
+const DashboardButton = styled(Link)`
+  width: 100%;
+  color: white;
+  text-decoration: none;
+`;
+
 const IssuesPage = () => {
   return (
     <div>
       <Header>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/icons/logo-large.svg" alt="Prolog logo" />
-        <a href={Routes.projects}>Dashboard</a>
+        <Container>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icons/logo-large.svg" alt="Prolog logo" />
+          <Nav>
+            <NavItem>
+              <Link href={Routes.home}>Home</Link>
+            </NavItem>
+            <NavItem>
+              <Link href={Routes.products}>Products</Link>
+            </NavItem>
+            <NavItem>
+              <Link href={Routes.documentation}>Documentation</Link>
+            </NavItem>
+            <NavItem>
+              <Link href={Routes.pricing}>Pricing</Link>
+            </NavItem>
+          </Nav>
+          <Button
+            icon={ButtonIcon.none}
+            size={ButtonSize.lg}
+            color={ButtonColor.primary}
+          >
+            <DashboardButton href={Routes.projects}>
+              Open Dashboard
+            </DashboardButton>
+          </Button>
+        </Container>
       </Header>
       <ContactButton
         onClick={() =>
