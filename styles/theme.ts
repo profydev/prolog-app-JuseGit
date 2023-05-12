@@ -217,6 +217,13 @@ export const theme = {
           font-weight: 600;
         `,
       },
+      lg: {
+        medium: `
+          font-size: 1.125rem;
+          line-height: 1.75rem;
+          font-weight: 500;
+        `,
+      },
     },
     display: {
       sm: {
