@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button, ButtonColor, ButtonSize, ButtonIcon } from "@features/ui";
 import { color, space, textFont } from "@styles/theme";
 import { useState } from "react";
+import { ContentPageHome } from "@features/contents";
 
 const Container = styled.div`
   width: 100vw;
@@ -53,6 +54,7 @@ const ContactButton = styled.button`
   box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
   border: none;
   cursor: pointer;
+  z-index: 3;
 
   &:hover {
     background: #6941c6;
@@ -205,6 +207,8 @@ const IssuesPage = () => {
           </ModalContent>
         </ModalContainer>
       )}
+
+      <ContentPageHome />
     </Container>
   );
 };
