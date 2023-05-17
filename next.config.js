@@ -8,6 +8,14 @@ const nextConfig = {
   },
   images: {
     domains: ["prolog-api.profy.dev"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "prolog-api.profy.dev",
+        port: "",
+        pathname: "/images/",
+      },
+    ],
   },
   env: {
     NEXT_PUBLIC_APP_VERSION: packageJson.version,
